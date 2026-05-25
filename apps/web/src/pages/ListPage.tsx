@@ -73,17 +73,24 @@ export function ListPage({ title, type, resource }: Props) {
         (resource === 'categories' && categories.isLoading) ||
         (resource === 'accounts' && accounts.isLoading) ||
         (resource === 'cards' && cards.isLoading)) && <LinearProgress sx={{ mb: 2 }} />}
-      <Card>
-        <CardContent sx={{ p: { xs: 1, sm: 2 } }}>
+      <Card
+        sx={{
+          borderRadius: 3,
+          border: '1px solid',
+          borderColor: 'divider',
+          boxShadow: '0 14px 32px rgba(15,23,42,0.06)',
+        }}
+      >
+        <CardContent sx={{ p: { xs: 1.2, sm: 2 } }}>
           {resource ? (
             <TableContainer>
               <Table size="small">
                 <TableHead>
                   <TableRow>
-                    <TableCell>Nome</TableCell>
-                    <TableCell>Detalhes</TableCell>
-                    <TableCell>Status</TableCell>
-                    <TableCell align="right">Acoes</TableCell>
+                    <TableCell sx={{ fontWeight: 700 }}>Nome</TableCell>
+                    <TableCell sx={{ fontWeight: 700 }}>Detalhes</TableCell>
+                    <TableCell sx={{ fontWeight: 700 }}>Status</TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 700 }}>Acoes</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -137,7 +144,7 @@ export function ListPage({ title, type, resource }: Props) {
                       <TableCell>{item.data}</TableCell>
                       <TableCell>{item.paymentMethod === 'CREDIT_CARD' ? item.dueDate || '-' : '-'}</TableCell>
                       <TableCell>
-                        <Typography fontWeight={700}>{item.descricao}</Typography>
+                        <Typography sx={{ fontWeight: 600 }}>{item.descricao}</Typography>
                         {item.isInstallment && (
                           <Typography variant="caption" color="text.secondary">
                             Parcela {item.installmentNumber}/{item.installmentTotal}
@@ -146,7 +153,7 @@ export function ListPage({ title, type, resource }: Props) {
                       </TableCell>
                       <TableCell>{item.category?.nome || '-'}</TableCell>
                       <TableCell>{item.paymentMethod || '-'}</TableCell>
-                      <TableCell align="right" sx={{ color: item.type === 'INCOME' ? 'success.main' : 'error.main', fontWeight: 800 }}>
+                      <TableCell align="right" sx={{ color: item.type === 'INCOME' ? 'success.main' : 'error.main', fontWeight: 700 }}>
                         {money.format(Number(item.valor))}
                       </TableCell>
                       <TableCell>

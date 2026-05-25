@@ -62,12 +62,22 @@ export function GoalsPage() {
           const percent = Math.min((Number(goal.valorAtual) / Number(goal.valorAlvo)) * 100, 100);
           return (
             <Grid item xs={12} md={4} key={goal.id}>
-              <Card>
-                <CardContent>
+              <Card
+                sx={{
+                  borderRadius: 3,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  boxShadow: '0 14px 32px rgba(15,23,42,0.06)',
+                  height: '100%',
+                }}
+              >
+                <CardContent sx={{ p: 2.4, '&:last-child': { pb: 2.4 } }}>
                   <Stack direction="row" alignItems="flex-start" justifyContent="space-between" spacing={1}>
                     <Box>
-                      <Typography variant="h6">{goal.nome}</Typography>
-                      <Typography color="text.secondary" mb={2}>
+                      <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                        {goal.nome}
+                      </Typography>
+                      <Typography color="text.secondary" mt={0.5}>
                         Prazo: {goal.prazo}
                       </Typography>
                     </Box>
@@ -104,7 +114,7 @@ export function GoalsPage() {
                       </IconButton>
                     </Stack>
                   </Stack>
-                  <Typography fontWeight={900}>
+                  <Typography sx={{ fontWeight: 700, mt: 1.5 }}>
                     {money.format(Number(goal.valorAtual))} de {money.format(Number(goal.valorAlvo))}
                   </Typography>
                   <Box sx={{ height: 8, bgcolor: 'divider', borderRadius: 99, mt: 2, overflow: 'hidden' }}>

@@ -79,10 +79,10 @@ export function DashboardPage() {
   ] as const;
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
       <PageHeader
         title="Dashboard"
-        subtitle="Visao mensal de saldo, cartoes, alertas e evolucao financeira."
+        subtitle="Visao mensal de saldo, cartoes, alertas e evolucao financeira com foco em leitura rápida e ação imediata."
         action={
           <Stack
             direction="row"
@@ -95,7 +95,14 @@ export function DashboardPage() {
               label="Mes"
               value={month}
               onChange={(event) => setMonth(Number(event.target.value))}
-              sx={{ minWidth: 110, flex: 1 }}
+              sx={{
+                minWidth: 110,
+                flex: 1,
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2,
+                  bgcolor: 'background.paper',
+                },
+              }}
             >
               {Array.from({ length: 12 }, (_, index) => (
                 <MenuItem key={index + 1} value={index + 1}>
@@ -109,7 +116,14 @@ export function DashboardPage() {
               label="Ano"
               value={year}
               onChange={(event) => setYear(Number(event.target.value))}
-              sx={{ minWidth: 110, flex: 1 }}
+              sx={{
+                minWidth: 110,
+                flex: 1,
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2,
+                  bgcolor: 'background.paper',
+                },
+              }}
             >
               {years.map((item) => (
                 <MenuItem key={item} value={item}>
@@ -121,7 +135,7 @@ export function DashboardPage() {
         }
       />
 
-      <Grid container spacing={2} sx={{ mt: -1 }}>
+      <Grid container spacing={2} sx={{ mt: -0.5 }}>
         {stats.map(([label, value, icon, tone]) => (
           <Grid
             item
@@ -150,7 +164,15 @@ export function DashboardPage() {
       {Boolean(data?.alertas.length) && (
         <Stack spacing={1.5}>
           {data?.alertas.map((alerta) => (
-            <Alert severity="warning" key={alerta}>
+            <Alert
+              severity="warning"
+              key={alerta}
+              sx={{
+                borderRadius: 2,
+                border: '1px solid rgba(217,119,6,0.16)',
+                bgcolor: 'rgba(253,230,138,0.18)',
+              }}
+            >
               {alerta}
             </Alert>
           ))}
@@ -288,9 +310,20 @@ function ChartCard({
   children: React.ReactNode;
 }) {
   return (
-    <Card sx={{ height: "100%" }}>
-      <CardContent sx={{ p: 2.25, "&:last-child": { pb: 2.25 } }}>
-        <Typography variant="h6">{title}</Typography>
+    <Card
+      sx={{
+        height: "100%",
+        borderRadius: 3,
+        border: '1px solid',
+        borderColor: 'divider',
+        bgcolor: 'background.paper',
+        boxShadow: '0 14px 32px rgba(15,23,42,0.06)',
+      }}
+    >
+      <CardContent sx={{ p: 2.4, '&:last-child': { pb: 2.4 } }}>
+        <Typography variant="subtitle1" sx={{ mb: 1.5, fontWeight: 700 }}>
+          {title}
+        </Typography>
         {children}
       </CardContent>
     </Card>
@@ -304,16 +337,16 @@ function EmptyChart({ message }: { message: string }) {
       justifyContent="center"
       sx={{
         height: 300,
-        border: "1px dashed",
-        borderColor: "divider",
-        borderRadius: 2,
-        bgcolor: "rgba(47,47,47,0.02)",
+        border: '1px dashed',
+        borderColor: 'divider',
+        borderRadius: 3,
+        bgcolor: 'rgba(15,118,110,0.03)',
         px: 2,
-        textAlign: "center",
+        textAlign: 'center',
       }}
     >
-      <Typography fontWeight={800}>Sem dados no periodo</Typography>
-      <Typography variant="body2" color="text.secondary" mt={0.5}>
+      <Typography sx={{ fontWeight: 700 }}>Sem dados no periodo</Typography>
+      <Typography variant="body2" color="text.secondary" mt={0.75}>
         {message}
       </Typography>
     </Stack>

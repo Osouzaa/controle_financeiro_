@@ -29,17 +29,34 @@ export function ReportsPage() {
 
   return (
     <>
-      <PageHeader title="Relatórios" subtitle="Análise anual, categorias, cartões e exportação." action={<Button variant="contained" startIcon={<Download />} onClick={exportCsv}>Exportar Excel</Button>} />
+      <PageHeader
+        title="Relatórios"
+        subtitle="Análise anual, categorias, cartões e exportação com dados prontos para decisão."
+        action={
+          <Button variant="contained" startIcon={<Download />} onClick={exportCsv}>
+            Exportar Excel
+          </Button>
+        }
+      />
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" mb={2}>Mensal {year}</Typography>
+          <Card
+            sx={{
+              borderRadius: 3,
+              border: '1px solid',
+              borderColor: 'divider',
+              boxShadow: '0 14px 32px rgba(15,23,42,0.06)',
+            }}
+          >
+            <CardContent sx={{ p: 2.4, '&:last-child': { pb: 2.4 } }}>
+              <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 700 }}>
+                Mensal {year}
+              </Typography>
               <ResponsiveContainer width="100%" height={320}>
                 <BarChart data={data?.monthly || []}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(15,23,42,0.08)" />
+                  <XAxis dataKey="month" axisLine={false} tickLine={false} />
+                  <YAxis axisLine={false} tickLine={false} />
                   <Tooltip formatter={(value) => money.format(Number(value))} />
                   <Bar dataKey="receitas" fill="#22C55E" radius={[6, 6, 0, 0]} />
                   <Bar dataKey="despesas" fill="#DC2626" radius={[6, 6, 0, 0]} />

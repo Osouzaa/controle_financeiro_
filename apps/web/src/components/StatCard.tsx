@@ -6,10 +6,14 @@ export function StatCard({ label, value, icon, tone, loading }: { label: string;
     <Card
       sx={{
         height: '100%',
+        borderRadius: 3,
+        border: '1px solid',
+        borderColor: 'divider',
+        background: 'linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,250,252,0.96))',
         transition: 'transform 160ms ease, box-shadow 160ms ease',
         '&:hover': {
           transform: 'translateY(-2px)',
-          boxShadow: '0 18px 36px rgba(47,47,47,0.1)',
+          boxShadow: '0 18px 36px rgba(15,23,42,0.08)',
         },
       }}
     >
@@ -29,14 +33,14 @@ export function StatCard({ label, value, icon, tone, loading }: { label: string;
           >
             {icon}
           </Stack>
-          <Stack minWidth={0} spacing={0.25}>
-            <Typography variant="body2" color="text.secondary" noWrap sx={{ fontWeight: 600 }}>
+          <Stack minWidth={0} spacing={0.35}>
+            <Typography variant="body2" color="text.secondary" noWrap sx={{ fontWeight: 500 }}>
               {label}
             </Typography>
             {loading ? (
               <Skeleton width={110} height={32} />
             ) : (
-              <Typography variant="h6" fontWeight={900} noWrap sx={{ lineHeight: 1.2 }}>
+              <Typography variant="h6" noWrap sx={{ lineHeight: 1.2, fontWeight: 700, color: 'text.primary' }}>
                 {value}
               </Typography>
             )}

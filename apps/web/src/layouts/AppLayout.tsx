@@ -79,8 +79,7 @@ export function AppLayout({
         <Typography
           variant="h6"
           color="primary"
-          fontWeight={900}
-          letterSpacing={0}
+          sx={{ fontWeight: 700, letterSpacing: 0 }}
         >
           Financeiro
         </Typography>
@@ -112,7 +111,7 @@ export function AppLayout({
             <ListItemText
               primary={item.label}
               primaryTypographyProps={{
-                fontWeight: location.pathname === item.path ? 800 : 600,
+                fontWeight: location.pathname === item.path ? 700 : 500,
               }}
             />
           </ListItemButton>
@@ -153,9 +152,10 @@ export function AppLayout({
           borderColor: "divider",
           bgcolor: "background.paper",
           backdropFilter: "blur(14px)",
+          boxShadow: "0 10px 30px rgba(15,23,42,0.04)",
         }}
       >
-        <Toolbar sx={{ gap: 1, px: { xs: 2, md: 4 } }}>
+        <Toolbar sx={{ gap: 1, px: { xs: 2, md: 4 }, minHeight: 74 }}>
           {!desktop && (
             <IconButton onClick={() => setOpen(true)} aria-label="menu">
               <Menu />
@@ -166,7 +166,7 @@ export function AppLayout({
             sx={{
               flex: 1,
               color: "text.primary",
-              fontWeight: 900,
+              fontWeight: 700,
               letterSpacing: 0,
             }}
           >
@@ -205,7 +205,12 @@ export function AppLayout({
           pb: 10,
         }}
       >
-        <Box>
+        <Box
+          sx={{
+            maxWidth: 1440,
+            mx: "auto",
+          }}
+        >
           <Outlet />
         </Box>
       </Box>
@@ -216,6 +221,7 @@ export function AppLayout({
           position: "fixed",
           right: { xs: 18, md: 32 },
           bottom: { xs: 18, md: 32 },
+          boxShadow: "0 12px 28px rgba(15,23,42,0.12)",
         }}
         aria-label="lançamento rápido"
       >

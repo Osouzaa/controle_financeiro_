@@ -32,7 +32,7 @@ export function App() {
       <CssBaseline />
       <BrowserRouter>
         <Routes>
-          <Route path="/login" element={<LoginPage />} />
+          <Route path="/login" element={<LoginPage mode={mode} onToggleMode={toggleMode} />} />
           <Route
             path="/"
             element={
