@@ -1,0 +1,21 @@
+{
+  "name": "financeiro-pessoal",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Sistema financeiro pessoal full stack com React, NestJS e PostgreSQL.",
+  "workspaces": [
+    "apps/web",
+    "apps/api"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace apps/web",
+    "dev:web": "npm run dev --workspace apps/web",
+    "dev:api": "npm run start:dev --workspace apps/api",
+    "build": "npm run build --workspace apps/api && npm run build --workspace apps/web",
+    "lint": "npm run lint --workspace apps/web && npm run lint --workspace apps/api",
+    "format": "prettier --write \"apps/**/*.{ts,tsx,css,json,md}\""
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3"
+  }
+}
