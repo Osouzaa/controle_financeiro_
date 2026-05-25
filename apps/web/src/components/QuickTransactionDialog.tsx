@@ -27,6 +27,7 @@ const schema = z.object({
   paymentMethod: z.enum(['CREDIT_CARD', 'DEBIT_CARD', 'PIX', 'CASH', 'TRANSFER', 'BANK_SLIP']).optional(),
   accountId: z.string().optional(),
   cardId: z.string().optional(),
+  dueDate: z.string().optional(),
   parcelas: z.coerce.number().optional(),
 });
 
@@ -138,6 +139,13 @@ export function QuickTransactionDialog({ open, onClose }: { open: boolean; onClo
                     </Select>
                   </FormControl>
                 )}
+              />
+              <TextField
+                label="Fatura"
+                type="date"
+                helperText="Opcional. Vazio usa o fechamento do cartao."
+                InputLabelProps={{ shrink: true }}
+                {...register('dueDate')}
               />
               <TextField label="Parcelas" type="number" inputProps={{ min: 1 }} {...register('parcelas')} />
             </>

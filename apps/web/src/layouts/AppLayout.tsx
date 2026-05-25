@@ -101,11 +101,11 @@ export function AppLayout({
               color: "text.secondary",
               "& .MuiListItemIcon-root": { color: "text.secondary" },
               "&.Mui-selected": {
-                bgcolor: "rgba(166,30,34,0.1)",
+                bgcolor: "rgba(15,118,110,0.1)",
                 color: "primary.main",
                 "& .MuiListItemIcon-root": { color: "primary.main" },
               },
-              "&.Mui-selected:hover": { bgcolor: "rgba(166,30,34,0.14)" },
+              "&.Mui-selected:hover": { bgcolor: "rgba(15,118,110,0.14)" },
             }}
           >
             <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>

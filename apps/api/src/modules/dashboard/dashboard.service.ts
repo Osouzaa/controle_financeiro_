@@ -27,7 +27,7 @@ export class DashboardService {
       this.goals.find({ where: { userId } }),
     ]);
 
-    const monthRows = transactions.filter((t) => t.data >= from && t.data <= to && t.status !== TransactionStatus.CANCELED);
+    const monthRows = transactions.filter((t) => this.effectiveDate(t) >= from && this.effectiveDate(t) <= to && t.status !== TransactionStatus.CANCELED);
     const paidRows = monthRows.filter((t) => t.status === TransactionStatus.PAID);
     const incomeMonth = this.sum(monthRows, TransactionType.INCOME);
     const expenseMonth = this.sum(monthRows, TransactionType.EXPENSE);
@@ -47,7 +47,7 @@ export class DashboardService {
         .filter((t) => t.type === TransactionType.EXPENSE)
         .reduce<Record<string, { name: string; value: number; color: string }>>((acc, item) => {
           const key = item.category?.nome || 'Sem categoria';
-          acc[key] ??= { name: key, value: 0, color: item.category?.cor || '#A61E22' };
+          acc[key] ??= { name: key, value: 0, color: item.category?.cor || '#0F766E' };
           acc[key].value += Number(item.valor);
           return acc;
         }, {}),
@@ -68,7 +68,7 @@ export class DashboardService {
       const date = new Date(year, month - 6 + index);
       const start = format(startOfMonth(date), 'yyyy-MM-dd');
       const end = format(endOfMonth(date), 'yyyy-MM-dd');
-      const rows = transactions.filter((t) => t.data >= start && t.data <= end && t.status !== TransactionStatus.CANCELED);
+      const rows = transactions.filter((t) => this.effectiveDate(t) >= start && this.effectiveDate(t) <= end && t.status !== TransactionStatus.CANCELED);
       return {
         month: format(date, 'MM/yyyy'),
         receitas: this.sum(rows, TransactionType.INCOME),
@@ -116,5 +116,12 @@ export class DashboardService {
 
   private sum(rows: Transaction[], type: TransactionType) {
     return rows.filter((t) => t.type === type).reduce((acc, t) => acc + Number(t.valor), 0);
+  }
+
+  private effectiveDate(transaction: Transaction) {
+    if (transaction.paymentMethod === PaymentMethod.CREDIT_CARD) {
+      return transaction.dueDate || transaction.data;
+    }
+    return transaction.data;
   }
 }

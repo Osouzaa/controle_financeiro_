@@ -4,15 +4,18 @@ export const buildTheme = (mode: 'light' | 'dark') =>
   createTheme({
     palette: {
       mode,
-      primary: { main: '#A61E22' },
-      success: { main: '#22C55E' },
-      error: { main: '#EF4444' },
+      primary: { main: '#0F766E', dark: '#115E59', light: '#14B8A6' },
+      secondary: { main: '#1D4ED8' },
+      success: { main: '#16A34A' },
+      warning: { main: '#D97706' },
+      error: { main: '#DC2626' },
       background: {
-        default: mode === 'light' ? '#F5F5F5' : '#171717',
-        paper: mode === 'light' ? '#FFFFFF' : '#202020',
+        default: mode === 'light' ? '#F8FAFC' : '#111827',
+        paper: mode === 'light' ? '#FFFFFF' : '#1F2937',
       },
       text: {
-        primary: mode === 'light' ? '#2F2F2F' : '#F5F5F5',
+        primary: mode === 'light' ? '#17202A' : '#F8FAFC',
+        secondary: mode === 'light' ? '#64748B' : '#CBD5E1',
       },
     },
     typography: {
@@ -28,7 +31,7 @@ export const buildTheme = (mode: 'light' | 'dark') =>
         styleOverrides: {
           root: {
             border: '1px solid rgba(47,47,47,0.08)',
-            boxShadow: '0 10px 28px rgba(47,47,47,0.06)',
+            boxShadow: '0 10px 28px rgba(15,23,42,0.06)',
           },
         },
       },

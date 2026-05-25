@@ -79,17 +79,17 @@ export class AuthService {
       ['Freela', CategoryType.INCOME, '#0EA5E9', 'Laptop'],
       ['Bônus', CategoryType.INCOME, '#84CC16', 'Stars'],
       ['Reembolso', CategoryType.INCOME, '#14B8A6', 'Replay'],
-      ['Casa', CategoryType.EXPENSE, '#A61E22', 'Home'],
-      ['Mercado', CategoryType.EXPENSE, '#EF4444', 'ShoppingCart'],
-      ['Combustível', CategoryType.EXPENSE, '#F97316', 'LocalGasStation'],
+      ['Casa', CategoryType.EXPENSE, '#0F766E', 'Home'],
+      ['Mercado', CategoryType.EXPENSE, '#14B8A6', 'ShoppingCart'],
+      ['Combustível', CategoryType.EXPENSE, '#D97706', 'LocalGasStation'],
       ['Água', CategoryType.EXPENSE, '#0EA5E9', 'WaterDrop'],
       ['Luz', CategoryType.EXPENSE, '#EAB308', 'Bolt'],
       ['Faculdade', CategoryType.EXPENSE, '#7C3AED', 'School'],
       ['Cursos', CategoryType.EXPENSE, '#2563EB', 'MenuBook'],
       ['Ferramentas', CategoryType.EXPENSE, '#475569', 'Build'],
-      ['iFood', CategoryType.EXPENSE, '#DC2626', 'Restaurant'],
+      ['iFood', CategoryType.EXPENSE, '#F59E0B', 'Restaurant'],
       ['Lazer', CategoryType.EXPENSE, '#EC4899', 'Celebration'],
-      ['Compras', CategoryType.EXPENSE, '#9333EA', 'ShoppingBag'],
+      ['Compras', CategoryType.EXPENSE, '#1D4ED8', 'ShoppingBag'],
     ] as const;
 
     await this.categories.save(

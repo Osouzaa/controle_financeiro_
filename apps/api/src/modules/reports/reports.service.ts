@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { endOfMonth, format, startOfMonth } from 'date-fns';
 import { Repository } from 'typeorm';
-import { TransactionStatus, TransactionType } from '../../common/enums';
+import { PaymentMethod, TransactionStatus, TransactionType } from '../../common/enums';
 import { Transaction } from '../../database/entities';
 
 @Injectable()
@@ -16,7 +16,7 @@ export class ReportsService {
       const date = new Date(year, index);
       const from = format(startOfMonth(date), 'yyyy-MM-dd');
       const to = format(endOfMonth(date), 'yyyy-MM-dd');
-      const monthRows = active.filter((t) => t.data >= from && t.data <= to);
+      const monthRows = active.filter((t) => this.effectiveDate(t) >= from && this.effectiveDate(t) <= to);
       return {
         month: format(date, 'MM/yyyy'),
         receitas: this.sum(monthRows, TransactionType.INCOME),
@@ -44,5 +44,12 @@ export class ReportsService {
         return acc;
       }, {}),
     );
+  }
+
+  private effectiveDate(transaction: Transaction) {
+    if (transaction.paymentMethod === PaymentMethod.CREDIT_CARD) {
+      return transaction.dueDate || transaction.data;
+    }
+    return transaction.data;
   }
 }

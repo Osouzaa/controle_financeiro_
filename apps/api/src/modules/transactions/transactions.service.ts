@@ -1,15 +1,18 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { addMonths, format } from 'date-fns';
+import { addMonths, format, getDaysInMonth } from 'date-fns';
 import { randomUUID } from 'node:crypto';
 import { Between, FindOptionsWhere, Repository } from 'typeorm';
 import { PaymentMethod, TransactionStatus, TransactionType } from '../../common/enums';
-import { Transaction } from '../../database/entities';
+import { Card, Transaction } from '../../database/entities';
 import { CreateTransactionDto, TransactionQueryDto } from './transactions.dto';
 
 @Injectable()
 export class TransactionsService {
-  constructor(@InjectRepository(Transaction) private readonly repo: Repository<Transaction>) {}
+  constructor(
+    @InjectRepository(Transaction) private readonly repo: Repository<Transaction>,
+    @InjectRepository(Card) private readonly cards: Repository<Card>,
+  ) {}
 
   async findAll(userId: string, query: TransactionQueryDto) {
     const where: FindOptionsWhere<Transaction> = { userId };
@@ -39,7 +42,8 @@ export class TransactionsService {
     }
 
     const status = dto.status ?? this.defaultStatus(dto);
-    return this.repo.save({ ...dto, userId, status, isInstallment: false });
+    const dueDate = await this.resolveCreditCardDueDate(userId, dto);
+    return this.repo.save({ ...dto, userId, status, isInstallment: false, dueDate });
   }
 
   async markPaid(userId: string, id: string) {
@@ -52,6 +56,14 @@ export class TransactionsService {
   async update(userId: string, id: string, dto: Partial<CreateTransactionDto>) {
     const item = await this.findOne(userId, id);
     Object.assign(item, dto);
+    if (item.paymentMethod === PaymentMethod.CREDIT_CARD) {
+      item.dueDate = await this.resolveCreditCardDueDate(userId, {
+        data: item.data,
+        paymentMethod: item.paymentMethod,
+        cardId: item.cardId,
+        dueDate: item.dueDate,
+      });
+    }
     return this.repo.save(item);
   }
 
@@ -91,11 +103,12 @@ export class TransactionsService {
     return item;
   }
 
-  private createInstallments(userId: string, dto: CreateTransactionDto, totalParcelas: number) {
+  private async createInstallments(userId: string, dto: CreateTransactionDto, totalParcelas: number) {
     const groupId = randomUUID();
     const total = Number(dto.valor);
     const parcelaValor = Math.round((total / totalParcelas) * 100) / 100;
-    const start = new Date(`${dto.data}T12:00:00`);
+    const firstDueDate = await this.resolveCreditCardDueDate(userId, dto);
+    const start = new Date(`${firstDueDate || dto.data}T12:00:00`);
 
     const rows = Array.from({ length: totalParcelas }, (_, index) => {
       const number = index + 1;
@@ -123,5 +136,21 @@ export class TransactionsService {
     if (dto.type === TransactionType.INCOME) return TransactionStatus.PAID;
     if (dto.paymentMethod === PaymentMethod.CREDIT_CARD) return TransactionStatus.PENDING;
     return TransactionStatus.PAID;
+  }
+
+  private async resolveCreditCardDueDate(userId: string, dto: Pick<CreateTransactionDto, 'paymentMethod' | 'cardId' | 'data' | 'dueDate'>) {
+    if (dto.paymentMethod !== PaymentMethod.CREDIT_CARD) return undefined;
+    if (dto.dueDate) return dto.dueDate;
+    if (!dto.cardId) return dto.data;
+
+    const card = await this.cards.findOne({ where: { id: dto.cardId, userId } });
+    if (!card) throw new NotFoundException('Cartao nao encontrado.');
+
+    const purchaseDate = new Date(`${dto.data}T12:00:00`);
+    const invoiceBaseDate = purchaseDate.getDate() > card.fechamento ? addMonths(purchaseDate, 1) : purchaseDate;
+    const dueDay = Math.min(card.vencimento, getDaysInMonth(invoiceBaseDate));
+    const dueDate = new Date(invoiceBaseDate.getFullYear(), invoiceBaseDate.getMonth(), dueDay, 12);
+
+    return format(dueDate, 'yyyy-MM-dd');
   }
 }

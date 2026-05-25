@@ -44,10 +44,45 @@ export function LoginPage() {
       sx={{
         minHeight: '100vh',
         display: 'grid',
-        gridTemplateColumns: { xs: '1fr', md: 'minmax(420px, 520px) 1fr' },
+        gridTemplateColumns: { xs: '1fr', md: '1fr minmax(420px, 520px)' },
         bgcolor: 'background.default',
       }}
     >
+      <Box
+        sx={{
+          display: { xs: 'none', md: 'block' },
+          position: 'relative',
+          overflow: 'hidden',
+          backgroundImage:
+            "linear-gradient(90deg, rgba(6,78,59,0.36), rgba(15,118,110,0.08)), url('/images/login-finance-hero.png')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <Stack
+          spacing={2}
+          sx={{
+            position: 'absolute',
+            left: 48,
+            bottom: 48,
+            width: 430,
+            color: '#fff',
+            textShadow: '0 2px 18px rgba(0,0,0,0.24)',
+          }}
+        >
+          <Typography variant="h3" fontWeight={900}>
+            Clareza financeira todos os dias.
+          </Typography>
+          <Typography sx={{ fontSize: 18, opacity: 0.92 }}>
+            Lancamentos rapidos, dashboards objetivos e controle mensal sem friccao.
+          </Typography>
+          <Stack direction="row" spacing={1.5}>
+            <InfoPill icon={<TrendingUp fontSize="small" />} label="Dashboard mensal" />
+            <InfoPill icon={<ShieldOutlined fontSize="small" />} label="Dados protegidos" />
+          </Stack>
+        </Stack>
+      </Box>
+
       <Stack
         justifyContent="center"
         sx={{
@@ -55,7 +90,7 @@ export function LoginPage() {
           px: { xs: 2.5, sm: 6, md: 7 },
           py: 5,
           bgcolor: 'background.paper',
-          borderRight: { md: '1px solid' },
+          borderLeft: { md: '1px solid' },
           borderColor: { md: 'divider' },
         }}
       >
@@ -70,7 +105,7 @@ export function LoginPage() {
                   display: 'grid',
                   placeItems: 'center',
                   color: 'primary.main',
-                  bgcolor: 'rgba(166,30,34,0.1)',
+                  bgcolor: 'rgba(15,118,110,0.1)',
                 }}
               >
                 <AccountBalanceWallet />
@@ -106,40 +141,6 @@ export function LoginPage() {
         </Stack>
       </Stack>
 
-      <Box
-        sx={{
-          display: { xs: 'none', md: 'block' },
-          position: 'relative',
-          overflow: 'hidden',
-          backgroundImage:
-            "linear-gradient(90deg, rgba(47,47,47,0.38), rgba(47,47,47,0.08)), url('https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1600&q=80')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-      >
-        <Stack
-          spacing={2}
-          sx={{
-            position: 'absolute',
-            left: 48,
-            bottom: 48,
-            width: 430,
-            color: '#fff',
-            textShadow: '0 2px 18px rgba(0,0,0,0.24)',
-          }}
-        >
-          <Typography variant="h3" fontWeight={900}>
-            Clareza financeira todos os dias.
-          </Typography>
-          <Typography sx={{ fontSize: 18, opacity: 0.92 }}>
-            Lancamentos rapidos, dashboards objetivos e controle mensal sem friccao.
-          </Typography>
-          <Stack direction="row" spacing={1.5}>
-            <InfoPill icon={<TrendingUp fontSize="small" />} label="Dashboard mensal" />
-            <InfoPill icon={<ShieldOutlined fontSize="small" />} label="Dados protegidos" />
-          </Stack>
-        </Stack>
-      </Box>
     </Box>
   );
 }

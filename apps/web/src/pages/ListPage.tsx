@@ -122,6 +122,7 @@ export function ListPage({ title, type, resource }: Props) {
                 <TableHead>
                   <TableRow>
                     <TableCell>Data</TableCell>
+                    <TableCell>Fatura</TableCell>
                     <TableCell>Descrição</TableCell>
                     <TableCell>Categoria</TableCell>
                     <TableCell>Pagamento</TableCell>
@@ -134,6 +135,7 @@ export function ListPage({ title, type, resource }: Props) {
                   {(transactions.data?.items || []).map((item) => (
                     <TableRow key={item.id} hover>
                       <TableCell>{item.data}</TableCell>
+                      <TableCell>{item.paymentMethod === 'CREDIT_CARD' ? item.dueDate || '-' : '-'}</TableCell>
                       <TableCell>
                         <Typography fontWeight={700}>{item.descricao}</Typography>
                         {item.isInstallment && (
@@ -231,7 +233,7 @@ function CreateDialog({
       setForm({
         ...editingItem,
         tipo: editingItem.tipo || 'EXPENSE',
-        cor: editingItem.cor || '#A61E22',
+        cor: editingItem.cor || '#0F766E',
         icone: editingItem.icone || 'Category',
       });
     } else if (open && !editingItem) {
@@ -243,7 +245,7 @@ function CreateDialog({
   const save = async () => {
     const payload =
       resource === 'categories'
-        ? { nome: form.nome, tipo: form.tipo || 'EXPENSE', cor: form.cor || '#A61E22', icone: form.icone || 'Category' }
+        ? { nome: form.nome, tipo: form.tipo || 'EXPENSE', cor: form.cor || '#0F766E', icone: form.icone || 'Category' }
         : resource === 'accounts'
           ? { nome: form.nome, saldoInicial: parseCurrencyToDecimal(form.saldoInicial || '') }
           : resource === 'cards'
@@ -262,6 +264,7 @@ function CreateDialog({
                 categoryId: form.categoryId || undefined,
                 accountId: form.accountId || undefined,
                 cardId: form.cardId || undefined,
+                dueDate: form.dueDate || undefined,
                 parcelas: form.parcelas ? Number(form.parcelas) : undefined,
               };
     if (editingItem?.id) {
@@ -285,7 +288,7 @@ function CreateDialog({
                 <MenuItem value="EXPENSE">Despesa</MenuItem>
                 <MenuItem value="INCOME">Receita</MenuItem>
               </TextField>
-              <TextField label="Cor" value={form.cor || '#A61E22'} onChange={(e) => field('cor', e.target.value)} />
+              <TextField label="Cor" value={form.cor || '#0F766E'} onChange={(e) => field('cor', e.target.value)} />
               <TextField label="Ícone" value={form.icone || 'Category'} onChange={(e) => field('icone', e.target.value)} />
             </>
           )}
@@ -342,6 +345,14 @@ function CreateDialog({
                       </MenuItem>
                     ))}
                   </TextField>
+                  <TextField
+                    type="date"
+                    label="Fatura"
+                    value={form.dueDate || ''}
+                    onChange={(e) => field('dueDate', e.target.value)}
+                    helperText="Opcional. Vazio usa o fechamento do cartao."
+                    InputLabelProps={{ shrink: true }}
+                  />
                   <TextField label="Parcelas" type="number" value={form.parcelas || ''} onChange={(e) => field('parcelas', e.target.value)} />
                 </>
               ) : (
@@ -388,6 +399,7 @@ function normalizeTransactionForEdit(item: any) {
     categoryId: item.category?.id || item.categoryId || '',
     accountId: item.account?.id || item.accountId || '',
     cardId: item.card?.id || item.cardId || '',
+    dueDate: item.dueDate || '',
   };
 }
 

@@ -63,10 +63,10 @@ export function DashboardPage() {
   const stats = [
     ["Saldo atual", data?.cards.saldoAtual, <AccountBalance />, "#22C55E"],
     ["Receitas do mes", data?.cards.receitasMes, <TrendingUp />, "#22C55E"],
-    ["Despesas do mes", data?.cards.despesasMes, <TrendingDown />, "#EF4444"],
-    ["Gasto hoje", data?.cards.gastoHoje, <Today />, "#EF4444"],
-    ["Total cartao", data?.cards.totalCartao, <CreditCard />, "#A61E22"],
-    ["Total investido", data?.cards.totalInvestido, <Savings />, "#2563EB"],
+    ["Despesas do mes", data?.cards.despesasMes, <TrendingDown />, "#DC2626"],
+    ["Gasto hoje", data?.cards.gastoHoje, <Today />, "#D97706"],
+    ["Total cartao", data?.cards.totalCartao, <CreditCard />, "#0F766E"],
+    ["Total investido", data?.cards.totalInvestido, <Savings />, "#1D4ED8"],
     ["Saldo final do mes", data?.cards.saldoFinalMes, <Wallet />, "#22C55E"],
     ["Contas pendentes", data?.cards.contasPendentes, <EventBusy />, "#F97316"],
     ["Receitas previstas", data?.cards.receitasPrevistas, <Paid />, "#22C55E"],
@@ -74,7 +74,7 @@ export function DashboardPage() {
       "Despesas previstas",
       data?.cards.despesasPrevistas,
       <TrendingDown />,
-      "#EF4444",
+      "#DC2626",
     ],
   ] as const;
 
@@ -173,7 +173,7 @@ export function DashboardPage() {
                     label
                   >
                     {(data?.charts.byCategory || []).map((entry) => (
-                      <Cell key={entry.name} fill={entry.color || "#A61E22"} />
+                      <Cell key={entry.name} fill={entry.color || "#0F766E"} />
                     ))}
                   </Pie>
                   <Tooltip formatter={(value) => money.format(Number(value))} />
@@ -209,7 +209,7 @@ export function DashboardPage() {
                   <Line
                     type="monotone"
                     dataKey="despesas"
-                    stroke="#EF4444"
+                    stroke="#DC2626"
                     strokeWidth={3}
                     dot={false}
                   />
@@ -242,7 +242,7 @@ export function DashboardPage() {
                   />
                   <Bar
                     dataKey="despesas"
-                    fill="#EF4444"
+                    fill="#DC2626"
                     radius={[6, 6, 0, 0]}
                   />
                 </BarChart>
@@ -267,7 +267,7 @@ export function DashboardPage() {
                   <XAxis dataKey="name" />
                   <YAxis />
                   <Tooltip formatter={(value) => money.format(Number(value))} />
-                  <Bar dataKey="value" fill="#A61E22" radius={[6, 6, 0, 0]} />
+                  <Bar dataKey="value" fill="#0F766E" radius={[6, 6, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             ) : (

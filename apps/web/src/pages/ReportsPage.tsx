@@ -42,7 +42,7 @@ export function ReportsPage() {
                   <YAxis />
                   <Tooltip formatter={(value) => money.format(Number(value))} />
                   <Bar dataKey="receitas" fill="#22C55E" radius={[6, 6, 0, 0]} />
-                  <Bar dataKey="despesas" fill="#EF4444" radius={[6, 6, 0, 0]} />
+                  <Bar dataKey="despesas" fill="#DC2626" radius={[6, 6, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>

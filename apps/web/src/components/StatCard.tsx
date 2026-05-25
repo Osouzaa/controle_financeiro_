@@ -23,7 +23,7 @@ export function StatCard({ label, value, icon, tone, loading }: { label: string;
               height: 42,
               borderRadius: 2,
               color: tone || 'primary.main',
-              bgcolor: tone ? `${tone}18` : 'rgba(166,30,34,0.1)',
+              bgcolor: tone ? `${tone}18` : 'rgba(15,118,110,0.1)',
               flexShrink: 0,
             }}
           >

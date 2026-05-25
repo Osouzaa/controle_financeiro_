@@ -40,6 +40,10 @@ export class CreateTransactionDto {
   cardId?: string;
 
   @IsOptional()
+  @IsDateString()
+  dueDate?: string;
+
+  @IsOptional()
   @Type(() => Number)
   @IsInt()
   @Min(2)

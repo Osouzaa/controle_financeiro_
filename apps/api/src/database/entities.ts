@@ -45,7 +45,7 @@ export class Category {
   @Column({ type: 'enum', enum: CategoryType })
   tipo: CategoryType;
 
-  @Column({ default: '#A61E22' })
+  @Column({ default: '#0F766E' })
   cor: string;
 
   @Column({ default: 'Category' })
