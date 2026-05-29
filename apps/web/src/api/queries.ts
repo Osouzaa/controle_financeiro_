@@ -1,8 +1,16 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from './client';
-import { Account, Card, Category, DashboardSummary, Goal, Transaction } from '../types/domain';
+import { Account, Card, Category, DashboardSummary, FixedBill, FixedBillChecklist, Goal, Transaction, User } from '../types/domain';
 
 const get = async <T>(url: string) => (await api.get<T>(url)).data;
+
+export function useCurrentUser() {
+  return useQuery({
+    queryKey: ['current-user'],
+    queryFn: () => get<User>('/users/me'),
+    enabled: Boolean(localStorage.getItem('accessToken')),
+  });
+}
 
 export function useDashboard(month: number, year: number) {
   return useQuery({
@@ -39,6 +47,17 @@ export function useFutureInstallments() {
   return useQuery({ queryKey: ['future-installments'], queryFn: () => get<Transaction[]>('/transactions/future-installments') });
 }
 
+export function useFixedBills() {
+  return useQuery({ queryKey: ['fixed-bills'], queryFn: () => get<FixedBill[]>('/fixed-bills') });
+}
+
+export function useFixedBillChecklist(month: number, year: number) {
+  return useQuery({
+    queryKey: ['fixed-bills-checklist', month, year],
+    queryFn: () => get<FixedBillChecklist>(`/fixed-bills/checklist?month=${month}&year=${year}`),
+  });
+}
+
 export function useCreateResource(resource: string, keys: string[]) {
   const queryClient = useQueryClient();
   return useMutation({
@@ -71,6 +90,32 @@ export function usePayTransaction() {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['future-installments'] });
+    },
+  });
+}
+
+export function useToggleFixedBillPayment(month: number, year: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, paid }: { id: string; paid: boolean }) =>
+      api.patch(`/fixed-bills/${id}/checklist`, { month, year, paid }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['fixed-bills-checklist', month, year] });
+      queryClient.invalidateQueries({ queryKey: ['fixed-bills'] });
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+    },
+  });
+}
+
+export function useDeleteFixedBill(month: number, year: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => api.delete(`/fixed-bills/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['fixed-bills-checklist', month, year] });
+      queryClient.invalidateQueries({ queryKey: ['fixed-bills'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     },
   });
 }

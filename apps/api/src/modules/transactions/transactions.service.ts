@@ -21,6 +21,7 @@ export class TransactionsService {
     if (query.accountId) where.accountId = query.accountId;
     if (query.cardId) where.cardId = query.cardId;
     if (query.from && query.to) where.data = Between(query.from, query.to);
+    if (query.status) where.status = query.status;
 
     const page = Math.max(Number(query.page || 1), 1);
     const limit = Math.min(Math.max(Number(query.limit || 20), 1), 100);
@@ -147,7 +148,7 @@ export class TransactionsService {
     if (!card) throw new NotFoundException('Cartao nao encontrado.');
 
     const purchaseDate = new Date(`${dto.data}T12:00:00`);
-    const invoiceBaseDate = purchaseDate.getDate() > card.fechamento ? addMonths(purchaseDate, 1) : purchaseDate;
+    const invoiceBaseDate = purchaseDate.getDate() > card.vencimento ? addMonths(purchaseDate, 1) : purchaseDate;
     const dueDay = Math.min(card.vencimento, getDaysInMonth(invoiceBaseDate));
     const dueDate = new Date(invoiceBaseDate.getFullYear(), invoiceBaseDate.getMonth(), dueDay, 12);
 

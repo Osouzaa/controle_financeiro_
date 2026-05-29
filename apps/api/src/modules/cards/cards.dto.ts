@@ -10,10 +10,5 @@ export class CreateCardDto {
   @IsInt()
   @Min(1)
   @Max(31)
-  fechamento: number;
-
-  @IsInt()
-  @Min(1)
-  @Max(31)
   vencimento: number;
 }

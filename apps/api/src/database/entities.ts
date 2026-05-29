@@ -93,9 +93,6 @@ export class Card {
   limite: string;
 
   @Column()
-  fechamento: number;
-
-  @Column()
   vencimento: number;
 
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
@@ -213,4 +210,79 @@ export class Goal {
   userId: string;
 }
 
-export const entities = [User, Category, Account, Card, Transaction, Goal];
+@Entity('fixed_bills')
+export class FixedBill {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column()
+  nome: string;
+
+  @Column('decimal', { precision: 14, scale: 2, nullable: true })
+  valor?: string;
+
+  @Column({ type: 'date', nullable: true })
+  endDate?: string;
+
+  @Column({ default: true })
+  ativo: boolean;
+
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'userId' })
+  user: User;
+
+  @Column()
+  userId: string;
+
+  @OneToMany(() => FixedBillPayment, (payment) => payment.fixedBill)
+  payments: FixedBillPayment[];
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+}
+
+@Entity('fixed_bill_payments')
+export class FixedBillPayment {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @ManyToOne(() => FixedBill, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'fixedBillId' })
+  fixedBill: FixedBill;
+
+  @Column()
+  fixedBillId: string;
+
+  @Column()
+  userId: string;
+
+  @Column()
+  month: number;
+
+  @Column()
+  year: number;
+
+  @Column({ default: false })
+  paid: boolean;
+
+  @ManyToOne(() => Transaction, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'transactionId' })
+  transaction?: Transaction;
+
+  @Column({ nullable: true })
+  transactionId?: string;
+
+  @Column({ type: 'timestamp', nullable: true })
+  paidAt?: Date;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+}
+
+export const entities = [User, Category, Account, Card, Transaction, Goal, FixedBill, FixedBillPayment];

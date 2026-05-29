@@ -77,6 +77,10 @@ export class TransactionQueryDto {
   type?: TransactionType;
 
   @IsOptional()
+  @IsEnum(TransactionStatus)
+  status?: TransactionStatus;
+
+  @IsOptional()
   @Type(() => Number)
   @IsInt()
   page?: number = 1;

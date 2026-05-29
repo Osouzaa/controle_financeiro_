@@ -19,12 +19,13 @@ export class AuthService {
   ) {}
 
   async register(dto: RegisterDto) {
-    const exists = await this.users.findOne({ where: { email: dto.email } });
-    if (exists) throw new ConflictException('E-mail já cadastrado.');
+    const email = dto.email.trim().toLowerCase();
+    const exists = await this.users.findOne({ where: { email } });
+    if (exists) throw new ConflictException('Este e-mail já está cadastrado.');
 
     const user = await this.users.save({
-      nome: dto.nome,
-      email: dto.email.toLowerCase(),
+      nome: dto.nome.trim(),
+      email,
       senha: await bcrypt.hash(dto.senha, 10),
     });
 
@@ -33,9 +34,9 @@ export class AuthService {
   }
 
   async login(dto: LoginDto) {
-    const user = await this.users.findOne({ where: { email: dto.email.toLowerCase() } });
+    const user = await this.users.findOne({ where: { email: dto.email.trim().toLowerCase() } });
     if (!user || !(await bcrypt.compare(dto.senha, user.senha))) {
-      throw new UnauthorizedException('Credenciais inválidas.');
+      throw new UnauthorizedException('E-mail ou senha inválidos.');
     }
 
     return this.issueTokens(user.id, user.email, user.nome);

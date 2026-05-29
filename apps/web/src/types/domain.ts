@@ -3,6 +3,13 @@ export type PaymentMethod = 'CREDIT_CARD' | 'DEBIT_CARD' | 'PIX' | 'CASH' | 'TRA
 export type TransactionStatus = 'PENDING' | 'PAID' | 'CANCELED';
 export type CategoryType = 'INCOME' | 'EXPENSE';
 
+export type User = {
+  id: string;
+  nome: string;
+  email: string;
+  createdAt?: string;
+};
+
 export type Category = {
   id: string;
   nome: string;
@@ -22,7 +29,6 @@ export type Card = {
   id: string;
   nome: string;
   limite: string;
-  fechamento: number;
   vencimento: number;
   gasto?: number;
   limiteRestante?: number;
@@ -52,6 +58,38 @@ export type Goal = {
   valorAlvo: string;
   valorAtual: string;
   prazo: string;
+};
+
+export type FixedBill = {
+  id: string;
+  nome: string;
+  valor?: string;
+  endDate?: string;
+  ativo: boolean;
+};
+
+export type FixedBillChecklistItem = {
+  id: string;
+  nome: string;
+  valor?: string;
+  endDate?: string;
+  paid: boolean;
+  paidAt?: string;
+  paymentId?: string;
+};
+
+export type FixedBillChecklist = {
+  month: number;
+  year: number;
+  items: FixedBillChecklistItem[];
+  summary: {
+    total: number;
+    paid: number;
+    pending: number;
+    totalAmount: number;
+    paidAmount: number;
+    pendingAmount: number;
+  };
 };
 
 export type DashboardSummary = {

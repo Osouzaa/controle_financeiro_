@@ -1,11 +1,14 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Close } from '@mui/icons-material';
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   FormControl,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
@@ -13,6 +16,7 @@ import {
   TextField,
   ToggleButton,
   ToggleButtonGroup,
+  Typography,
 } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -33,6 +37,15 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
+const dialogPaperProps = {
+  sx: {
+    borderRadius: 3,
+    border: '1px solid',
+    borderColor: 'divider',
+    boxShadow: '0 24px 80px rgba(15,23,42,0.18)',
+  },
+};
+
 export function QuickTransactionDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { data: categories = [] } = useCategories();
   const { data: accounts = [] } = useAccounts();
@@ -46,20 +59,47 @@ export function QuickTransactionDialog({ open, onClose }: { open: boolean; onClo
   const paymentMethod = watch('paymentMethod');
 
   const submit = handleSubmit(async (values) => {
+    const isIncome = values.type === 'INCOME';
     await create.mutateAsync({
       ...values,
       valor: parseCurrencyToDecimal(values.valor),
       data: new Date().toISOString().slice(0, 10),
-      parcelas: values.parcelas && values.parcelas > 1 ? values.parcelas : undefined,
+      paymentMethod: isIncome ? undefined : values.paymentMethod,
+      cardId: isIncome ? undefined : values.cardId,
+      dueDate: isIncome ? undefined : values.dueDate,
+      parcelas: !isIncome && values.parcelas && values.parcelas > 1 ? values.parcelas : undefined,
     });
     reset({ type: 'EXPENSE', paymentMethod: 'PIX' });
     onClose();
   });
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
-      <DialogTitle>Lançamento rápido</DialogTitle>
-      <DialogContent>
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs" PaperProps={dialogPaperProps}>
+      <DialogTitle
+        sx={{
+          px: 3,
+          py: 2.25,
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
+          gap: 2,
+          borderBottom: '1px solid',
+          borderColor: 'divider',
+        }}
+      >
+        <Box>
+          <Typography variant="h6" sx={{ fontWeight: 700 }}>
+            Lançamento rápido
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Registre uma movimentação sem sair da tela atual.
+          </Typography>
+        </Box>
+        <IconButton aria-label="fechar" onClick={onClose} size="small">
+          <Close fontSize="small" />
+        </IconButton>
+      </DialogTitle>
+      <DialogContent sx={{ px: 3, py: 2.5 }}>
         <Stack spacing={2} mt={1}>
           <Controller
             name="type"
@@ -84,7 +124,7 @@ export function QuickTransactionDialog({ open, onClose }: { open: boolean; onClo
               />
             )}
           />
-          <TextField label="Descrição" {...register('descricao')} />
+          <TextField label={type === 'INCOME' ? 'Origem do ganho' : 'Descrição'} {...register('descricao')} />
           <Controller
             name="categoryId"
             control={control}
@@ -122,7 +162,7 @@ export function QuickTransactionDialog({ open, onClose }: { open: boolean; onClo
               )}
             />
           )}
-          {paymentMethod === 'CREDIT_CARD' ? (
+          {type === 'EXPENSE' && paymentMethod === 'CREDIT_CARD' ? (
             <>
               <Controller
                 name="cardId"
@@ -143,7 +183,7 @@ export function QuickTransactionDialog({ open, onClose }: { open: boolean; onClo
               <TextField
                 label="Fatura"
                 type="date"
-                helperText="Opcional. Vazio usa o fechamento do cartao."
+                helperText="Opcional. Vazio usa o vencimento do cartão."
                 InputLabelProps={{ shrink: true }}
                 {...register('dueDate')}
               />
@@ -169,7 +209,15 @@ export function QuickTransactionDialog({ open, onClose }: { open: boolean; onClo
           )}
         </Stack>
       </DialogContent>
-      <DialogActions>
+      <DialogActions
+        sx={{
+          px: 3,
+          py: 2,
+          borderTop: '1px solid',
+          borderColor: 'divider',
+          bgcolor: 'background.default',
+        }}
+      >
         <Button onClick={onClose}>Cancelar</Button>
         <Button variant="contained" onClick={submit} disabled={create.isPending}>
           Salvar

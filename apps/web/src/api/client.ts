@@ -20,11 +20,15 @@ api.interceptors.response.use(
         const { data } = await api.post('/auth/refresh', { refreshToken });
         localStorage.setItem('accessToken', data.accessToken);
         localStorage.setItem('refreshToken', data.refreshToken);
+        if (data.user) {
+          localStorage.setItem('user', JSON.stringify(data.user));
+        }
         error.config.headers.Authorization = `Bearer ${data.accessToken}`;
         return api.request(error.config);
       } catch {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
+        localStorage.removeItem('user');
         window.location.href = '/login';
       }
     }

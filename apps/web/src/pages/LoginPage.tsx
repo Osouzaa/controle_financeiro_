@@ -1,6 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
-  AccountBalanceWallet,
   ArrowForward,
   DarkMode,
   EmailOutlined,
@@ -25,14 +24,16 @@ import {
   useTheme,
 } from '@mui/material';
 import { useMutation } from '@tanstack/react-query';
+import type { AxiosError } from 'axios';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { api } from '../api/client';
+import { BrandLogo } from '../components/BrandLogo';
 
 const schema = z.object({
-  email: z.string().email({ message: 'Informe um e-mail válido.' }),
+  email: z.string().trim().email({ message: 'Informe um e-mail válido.' }),
   senha: z.string().min(6, { message: 'A senha precisa ter pelo menos 6 caracteres.' }),
   lembrarLogin: z.boolean().optional(),
 });
@@ -43,6 +44,37 @@ type LoginPageProps = {
   mode: 'light' | 'dark';
   onToggleMode: () => void;
 };
+
+type ApiErrorResponse = {
+  message?: string | string[];
+  error?: string;
+  statusCode?: number;
+};
+
+function getAuthErrorMessage(error: unknown, isRegistering: boolean) {
+  const response = (error as AxiosError<ApiErrorResponse>).response;
+  const message = response?.data?.message;
+
+  if (Array.isArray(message) && message.length > 0) {
+    return message.join(' ');
+  }
+
+  if (typeof message === 'string' && message.trim()) {
+    return message;
+  }
+
+  if (response?.status === 409 && isRegistering) {
+    return 'Este e-mail já está cadastrado.';
+  }
+
+  if (response?.status === 401) {
+    return 'E-mail ou senha inválidos.';
+  }
+
+  return isRegistering
+    ? 'Não foi possível criar sua conta. Verifique os dados e tente novamente.'
+    : 'Não foi possível autenticar. Verifique seus dados e tente novamente.';
+}
 
 const formFieldSx = (isDark: boolean) => ({
   '& .MuiInputLabel-root': {
@@ -89,7 +121,7 @@ export function LoginPage({ mode, onToggleMode }: LoginPageProps) {
   const [error, setError] = useState('');
 
   const formSchema = registerMode
-    ? schema.extend({ nome: z.string().min(2, { message: 'Informe seu nome.' }) })
+    ? schema.extend({ nome: z.string().trim().min(2, { message: 'Informe seu nome.' }) })
     : schema;
 
   const {
@@ -109,9 +141,10 @@ export function LoginPage({ mode, onToggleMode }: LoginPageProps) {
     onSuccess: ({ data }) => {
       localStorage.setItem('accessToken', data.accessToken);
       localStorage.setItem('refreshToken', data.refreshToken);
+      localStorage.setItem('user', JSON.stringify(data.user));
       navigate('/');
     },
-    onError: () => setError('Não foi possível autenticar. Verifique seus dados e tente novamente.'),
+    onError: (error) => setError(getAuthErrorMessage(error, registerMode)),
   });
 
   const pageBackground = isDark
@@ -225,29 +258,7 @@ export function LoginPage({ mode, onToggleMode }: LoginPageProps) {
         >
           <Stack spacing={2.75} sx={{ width: '100%', maxWidth: 460 }}>
             <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
-              <Stack direction="row" spacing={1.25} alignItems="center">
-                <Box
-                  sx={{
-                    width: 44,
-                    height: 44,
-                    borderRadius: 3,
-                    display: 'grid',
-                    placeItems: 'center',
-                    bgcolor: isDark ? 'rgba(20,184,166,0.14)' : 'rgba(15,118,110,0.08)',
-                    color: theme.palette.primary.main,
-                  }}
-                >
-                  <AccountBalanceWallet />
-                </Box>
-                <Box>
-                  <Typography variant="h6" sx={{ fontWeight: 700, color: isDark ? '#f8fafc' : '#0f172a' }}>
-                    Financeiro
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: isDark ? 'rgba(226,232,240,0.76)' : 'rgba(71,85,105,0.95)' }}>
-                    Acesse o seu painel com foco.
-                  </Typography>
-                </Box>
-              </Stack>
+              <BrandLogo tone={isDark ? 'light' : 'default'} />
 
               <Tooltip title={isDark ? 'Ativar modo claro' : 'Ativar modo escuro'}>
                 <IconButton
@@ -285,7 +296,14 @@ export function LoginPage({ mode, onToggleMode }: LoginPageProps) {
 
             {error && <Alert severity="error">{error}</Alert>}
 
-            <Stack spacing={2} component="form" onSubmit={handleSubmit((values) => mutation.mutate(values))}>
+            <Stack
+              spacing={2}
+              component="form"
+              onSubmit={handleSubmit((values) => {
+                setError('');
+                mutation.mutate(values);
+              })}
+            >
               {registerMode && (
                 <TextField
                   fullWidth
@@ -377,7 +395,10 @@ export function LoginPage({ mode, onToggleMode }: LoginPageProps) {
               <Divider sx={{ borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.08)' }} />
 
               <Button
-                onClick={() => setRegisterMode((value) => !value)}
+                onClick={() => {
+                  setError('');
+                  setRegisterMode((value) => !value);
+                }}
                 variant="text"
                 color="inherit"
                 sx={{

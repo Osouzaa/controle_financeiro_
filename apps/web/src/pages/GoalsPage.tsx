@@ -1,4 +1,4 @@
-import { Add, DeleteOutline, EditOutlined } from '@mui/icons-material';
+import { Add, Close, DeleteOutline, EditOutlined } from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -23,6 +23,34 @@ import { money } from '../theme/theme';
 import { formatCurrencyInput, parseCurrencyToDecimal } from '../utils/currency';
 
 type GoalForm = { id?: string; nome: string; valorAlvo: string; valorAtual: string; prazo: string };
+
+const dialogPaperProps = {
+  sx: {
+    borderRadius: 3,
+    border: '1px solid',
+    borderColor: 'divider',
+    boxShadow: '0 24px 80px rgba(15,23,42,0.18)',
+  },
+};
+
+const dialogTitleSx = {
+  px: 3,
+  py: 2.25,
+  display: 'flex',
+  alignItems: 'flex-start',
+  justifyContent: 'space-between',
+  gap: 2,
+  borderBottom: '1px solid',
+  borderColor: 'divider',
+};
+
+const dialogActionsSx = {
+  px: 3,
+  py: 2,
+  borderTop: '1px solid',
+  borderColor: 'divider',
+  bgcolor: 'background.default',
+};
 
 const emptyGoal = (): GoalForm => ({
   nome: '',
@@ -134,12 +162,19 @@ export function GoalsPage() {
           setEditingGoal(null);
         }}
       />
-      <Dialog open={Boolean(goalToDelete)} onClose={() => setGoalToDelete(null)} fullWidth maxWidth="xs">
-        <DialogTitle>Confirmar exclusao</DialogTitle>
-        <DialogContent>
+      <Dialog open={Boolean(goalToDelete)} onClose={() => setGoalToDelete(null)} fullWidth maxWidth="xs" PaperProps={dialogPaperProps}>
+        <DialogTitle sx={dialogTitleSx}>
+          <Typography variant="h6" sx={{ fontWeight: 700 }}>
+            Confirmar exclusao
+          </Typography>
+          <IconButton aria-label="fechar" onClick={() => setGoalToDelete(null)} size="small">
+            <Close fontSize="small" />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent sx={{ px: 3, py: 2.5 }}>
           <DialogContentText>Tem certeza que deseja apagar "{goalToDelete?.nome}"? Essa acao nao pode ser desfeita.</DialogContentText>
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={dialogActionsSx}>
           <Button onClick={() => setGoalToDelete(null)}>Cancelar</Button>
           <Button
             color="error"
@@ -189,9 +224,21 @@ function GoalDialog({ open, onClose, editingGoal }: { open: boolean; onClose: ()
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
-      <DialogTitle>{editingGoal ? 'Editar meta' : 'Nova meta'}</DialogTitle>
-      <DialogContent>
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs" PaperProps={dialogPaperProps}>
+      <DialogTitle sx={dialogTitleSx}>
+        <Box>
+          <Typography variant="h6" sx={{ fontWeight: 700 }}>
+            {editingGoal ? 'Editar meta' : 'Nova meta'}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Defina valor, progresso atual e prazo do objetivo.
+          </Typography>
+        </Box>
+        <IconButton aria-label="fechar" onClick={onClose} size="small">
+          <Close fontSize="small" />
+        </IconButton>
+      </DialogTitle>
+      <DialogContent sx={{ px: 3, py: 2.5 }}>
         <Stack spacing={2} mt={1}>
           <TextField label="Nome" value={form.nome} onChange={(e) => setForm({ ...form, nome: e.target.value })} />
           <TextField label="Valor alvo" inputMode="numeric" value={form.valorAlvo} onChange={(e) => setForm({ ...form, valorAlvo: formatCurrencyInput(e.target.value) })} />
@@ -199,7 +246,7 @@ function GoalDialog({ open, onClose, editingGoal }: { open: boolean; onClose: ()
           <TextField label="Prazo" type="date" value={form.prazo} onChange={(e) => setForm({ ...form, prazo: e.target.value })} InputLabelProps={{ shrink: true }} />
         </Stack>
       </DialogContent>
-      <DialogActions>
+      <DialogActions sx={dialogActionsSx}>
         <Button onClick={onClose}>Cancelar</Button>
         <Button variant="contained" onClick={save} disabled={create.isPending || update.isPending}>
           Salvar

@@ -79,7 +79,7 @@ export function DashboardPage() {
   ] as const;
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
       <PageHeader
         title="Dashboard"
         subtitle="Visao mensal de saldo, cartoes, alertas e evolucao financeira com foco em leitura rápida e ação imediata."
@@ -98,9 +98,9 @@ export function DashboardPage() {
               sx={{
                 minWidth: 110,
                 flex: 1,
-                '& .MuiOutlinedInput-root': {
+                "& .MuiOutlinedInput-root": {
                   borderRadius: 2,
-                  bgcolor: 'background.paper',
+                  bgcolor: "background.paper",
                 },
               }}
             >
@@ -119,9 +119,9 @@ export function DashboardPage() {
               sx={{
                 minWidth: 110,
                 flex: 1,
-                '& .MuiOutlinedInput-root': {
+                "& .MuiOutlinedInput-root": {
                   borderRadius: 2,
-                  bgcolor: 'background.paper',
+                  bgcolor: "background.paper",
                 },
               }}
             >
@@ -169,8 +169,8 @@ export function DashboardPage() {
               key={alerta}
               sx={{
                 borderRadius: 2,
-                border: '1px solid rgba(217,119,6,0.16)',
-                bgcolor: 'rgba(253,230,138,0.18)',
+                border: "1px solid rgba(217,119,6,0.16)",
+                bgcolor: "rgba(253,230,138,0.18)",
               }}
             >
               {alerta}
@@ -314,13 +314,13 @@ function ChartCard({
       sx={{
         height: "100%",
         borderRadius: 3,
-        border: '1px solid',
-        borderColor: 'divider',
-        bgcolor: 'background.paper',
-        boxShadow: '0 14px 32px rgba(15,23,42,0.06)',
+        border: "1px solid",
+        borderColor: "divider",
+        bgcolor: "background.paper",
+        boxShadow: "0 14px 32px rgba(15,23,42,0.06)",
       }}
     >
-      <CardContent sx={{ p: 2.4, '&:last-child': { pb: 2.4 } }}>
+      <CardContent sx={{ p: 2.4, "&:last-child": { pb: 2.4 } }}>
         <Typography variant="subtitle1" sx={{ mb: 1.5, fontWeight: 700 }}>
           {title}
         </Typography>
@@ -337,12 +337,12 @@ function EmptyChart({ message }: { message: string }) {
       justifyContent="center"
       sx={{
         height: 300,
-        border: '1px dashed',
-        borderColor: 'divider',
+        border: "1px dashed",
+        borderColor: "divider",
         borderRadius: 3,
-        bgcolor: 'rgba(15,118,110,0.03)',
+        bgcolor: "rgba(15,118,110,0.03)",
         px: 2,
-        textAlign: 'center',
+        textAlign: "center",
       }}
     >
       <Typography sx={{ fontWeight: 700 }}>Sem dados no periodo</Typography>

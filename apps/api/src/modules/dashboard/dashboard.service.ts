@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { endOfMonth, format, startOfMonth } from 'date-fns';
 import { Repository } from 'typeorm';
 import { PaymentMethod, TransactionStatus, TransactionType } from '../../common/enums';
-import { Account, Goal, Transaction } from '../../database/entities';
+import { Account, FixedBill, FixedBillPayment, Goal, Transaction } from '../../database/entities';
 
 @Injectable()
 export class DashboardService {
@@ -11,6 +11,8 @@ export class DashboardService {
     @InjectRepository(Transaction) private readonly transactions: Repository<Transaction>,
     @InjectRepository(Account) private readonly accounts: Repository<Account>,
     @InjectRepository(Goal) private readonly goals: Repository<Goal>,
+    @InjectRepository(FixedBill) private readonly fixedBills: Repository<FixedBill>,
+    @InjectRepository(FixedBillPayment) private readonly fixedBillPayments: Repository<FixedBillPayment>,
   ) {}
 
   async summary(userId: string, month = new Date().getMonth() + 1, year = new Date().getFullYear()) {
@@ -18,13 +20,15 @@ export class DashboardService {
     const to = format(endOfMonth(new Date(year, month - 1)), 'yyyy-MM-dd');
     const today = format(new Date(), 'yyyy-MM-dd');
 
-    const [transactions, accounts, goals] = await Promise.all([
+    const [transactions, accounts, goals, fixedBills, fixedPayments] = await Promise.all([
       this.transactions.find({
         where: { userId },
         relations: { category: true, card: true },
       }),
       this.accounts.find({ where: { userId, ativo: true } }),
       this.goals.find({ where: { userId } }),
+      this.fixedBills.find({ where: { userId, ativo: true } }),
+      this.fixedBillPayments.find({ where: { userId, month, year } }),
     ]);
 
     const monthRows = transactions.filter((t) => this.effectiveDate(t) >= from && this.effectiveDate(t) <= to && t.status !== TransactionStatus.CANCELED);
@@ -33,6 +37,11 @@ export class DashboardService {
     const expenseMonth = this.sum(monthRows, TransactionType.EXPENSE);
     const paidIncome = this.sum(paidRows, TransactionType.INCOME);
     const paidExpense = this.sum(paidRows, TransactionType.EXPENSE);
+    const pendingIncome = this.sum(monthRows.filter((t) => t.status === TransactionStatus.PENDING), TransactionType.INCOME);
+    const pendingExpense = this.sum(monthRows.filter((t) => t.status === TransactionStatus.PENDING), TransactionType.EXPENSE);
+    const fixedPaymentByBill = new Map(fixedPayments.map((payment) => [payment.fixedBillId, payment]));
+    const pendingFixedBills = fixedBills.filter((bill) => (!bill.endDate || bill.endDate >= from) && !fixedPaymentByBill.get(bill.id)?.paid);
+    const pendingFixedExpense = pendingFixedBills.reduce((acc, bill) => acc + Number(bill.valor || 0), 0);
     const cardTotal = monthRows
       .filter((t) => t.paymentMethod === PaymentMethod.CREDIT_CARD && t.type === TransactionType.EXPENSE)
       .reduce((acc, t) => acc + Number(t.valor), 0);
@@ -76,6 +85,9 @@ export class DashboardService {
       };
     });
 
+    const forecastExpenseMonth = expenseMonth + pendingFixedExpense;
+    const forecastBalance = saldoInicial + incomeMonth - forecastExpenseMonth;
+
     const alertas = [
       expenseMonth > incomeMonth ? 'Despesas do mês estão maiores que as receitas.' : null,
       cardTotal > incomeMonth * 0.5 ? 'Cartão representa mais de 50% da receita mensal.' : null,
@@ -90,19 +102,19 @@ export class DashboardService {
         gastoHoje,
         totalCartao: cardTotal,
         totalInvestido,
-        saldoFinalMes: saldoInicial + incomeMonth - expenseMonth,
-        contasPendentes: monthRows.filter((t) => t.type === TransactionType.EXPENSE && t.status === TransactionStatus.PENDING).length,
-        receitasPrevistas: this.sum(monthRows.filter((t) => t.status === TransactionStatus.PENDING), TransactionType.INCOME),
-        despesasPrevistas: this.sum(monthRows.filter((t) => t.status === TransactionStatus.PENDING), TransactionType.EXPENSE),
+        saldoFinalMes: forecastBalance,
+        contasPendentes: monthRows.filter((t) => t.type === TransactionType.EXPENSE && t.status === TransactionStatus.PENDING).length + pendingFixedBills.length,
+        receitasPrevistas: pendingIncome,
+        despesasPrevistas: pendingExpense + pendingFixedExpense,
       },
       monthly: {
         receitasMes: incomeMonth,
-        despesasMes: expenseMonth,
+        despesasMes: forecastExpenseMonth,
         parcelasMes: monthRows.filter((t) => t.isInstallment).length,
-        saldoPrevisto: saldoInicial + incomeMonth - expenseMonth,
+        saldoPrevisto: forecastBalance,
         saldoRealizado: saldoInicial + paidIncome - paidExpense,
         contasPagas: monthRows.filter((t) => t.type === TransactionType.EXPENSE && t.status === TransactionStatus.PAID).length,
-        pendencias: monthRows.filter((t) => t.status === TransactionStatus.PENDING).length,
+        pendencias: monthRows.filter((t) => t.status === TransactionStatus.PENDING).length + pendingFixedBills.length,
       },
       charts: {
         byCategory,

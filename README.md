@@ -53,7 +53,7 @@ npm run dev:api
 npm run dev:web
 ```
 
-Frontend: `http://localhost:5173`
+Frontend: `http://localhost:8080`
 API: `http://localhost:3000/api`
 Swagger: `http://localhost:3000/docs`
 

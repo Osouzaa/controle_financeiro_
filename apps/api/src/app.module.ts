@@ -8,6 +8,7 @@ import { AccountsModule } from './modules/accounts/accounts.module';
 import { CardsModule } from './modules/cards/cards.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { FixedBillsModule } from './modules/fixed-bills/fixed-bills.module';
 import { GoalsModule } from './modules/goals/goals.module';
 import { ReportsModule } from './modules/reports/reports.module';
 import { TransactionsModule } from './modules/transactions/transactions.module';
@@ -37,6 +38,7 @@ import { UsersModule } from './users/users.module';
     CardsModule,
     CategoriesModule,
     TransactionsModule,
+    FixedBillsModule,
     DashboardModule,
     GoalsModule,
     ReportsModule,
